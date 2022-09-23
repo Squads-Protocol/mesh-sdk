@@ -35,9 +35,9 @@ export class TransactionBuilder {
     transactionPDA: PublicKey,
     instruction: TransactionInstruction,
     instructionIndex: number,
-    authorityIndex: number | null,
-    authorityBump: number | null,
-    authorityType: string | null,
+    authorityIndex: number,
+    authorityBump: number,
+    authorityType: string,
   ): Promise<TransactionInstruction> {
     const [instructionPDA] = getIxPDA(
       transactionPDA,
@@ -96,11 +96,13 @@ export class TransactionBuilder {
 
   async getInstructions(): Promise<[TransactionInstruction[], PublicKey]> {
     const transactionPDA = this.transactionPDA();
-    const wrappedAddInstructions = await Promise.all(
-      this.instructions.map((rawInstruction, index) =>
-        this._buildAddInstruction(transactionPDA, rawInstruction, index + 1)
-      )
-    );
+    // const wrappedAddInstructions = await Promise.all(
+    //   this.instructions.map((rawInstruction, index) =>
+    //     this._buildAddInstruction(transactionPDA, rawInstruction, index + 1)
+    //   )
+    // );
+
+    const wrappedAddInstructions = this.instructions;
     const createTxInstruction = await this.methods
       .createTransaction(this.authorityIndex)
       .accounts({
@@ -113,6 +115,7 @@ export class TransactionBuilder {
     this.instructions = [];
     return [instructions, transactionPDA];
   }
+
   async executeInstructions(): Promise<[TransactionInstruction[], PublicKey]> {
     const [instructions, transactionPDA] = await this.getInstructions();
     const { blockhash } = await this.provider.connection.getLatestBlockhash();

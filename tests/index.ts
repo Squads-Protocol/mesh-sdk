@@ -14,11 +14,16 @@ describe("Squads SDK", () => {
   const keypair: Keypair = web3.Keypair.generate();
   const wallet: Wallet = new NodeWallet(keypair);
   console.log("**** TESTING SQUADS SDK ****");
-  describe("Basic Functionality", () => {
+  describe.skip("Basic Functionality", () => {
     it("Constructs Squads object", () => {
       const squad = Squads.localnet(wallet);
       expect(squad.connection.rpcEndpoint).to.equal("http://localhost:8899");
       assert(squad.multisigProgramId.equals(DEFAULT_MULTISIG_PROGRAM_ID));
     });
+  });
+
+  describe("Tx Builder", () => {
+    const squad = Squads.localnet(wallet);
+
   });
 });

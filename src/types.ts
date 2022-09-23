@@ -20,6 +20,7 @@ type AccountDefDictionary<T extends Idl> = TypeDefDictionary<
   IdlTypes<T>
 >;
 
+
 export type MultisigAccount = AccountDefDictionary<Mesh>["ms"];
 export type TransactionAccount =
   AccountDefDictionary<Mesh>["msTransaction"];

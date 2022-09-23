@@ -161,6 +161,7 @@ class SquadsMesh {
       addresses
     ) as (MultisigAccount | null)[];
   }
+
   async getTransaction(address: PublicKey): Promise<TransactionAccount> {
     const accountData = await this.multisig.account.msTransaction.fetch(
       address,
@@ -363,6 +364,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getInstruction(instructionPDA);
   }
+
   async buildAddInstruction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey,
@@ -383,6 +385,7 @@ class SquadsMesh {
     );
     return await methods.instruction();
   }
+
   private async _activateTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -393,6 +396,7 @@ class SquadsMesh {
       creator: this.wallet.publicKey,
     });
   }
+
   async activateTransaction(
     transactionPDA: PublicKey
   ): Promise<TransactionAccount> {
@@ -404,6 +408,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getTransaction(transactionPDA);
   }
+
   async buildActivateTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -414,6 +419,7 @@ class SquadsMesh {
     );
     return await methods.instruction();
   }
+
   private async _approveTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -424,6 +430,7 @@ class SquadsMesh {
       member: this.wallet.publicKey,
     });
   }
+
   async approveTransaction(
     transactionPDA: PublicKey
   ): Promise<TransactionAccount> {
@@ -435,6 +442,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getTransaction(transactionPDA);
   }
+
   async buildApproveTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -452,6 +460,7 @@ class SquadsMesh {
       member: this.wallet.publicKey,
     });
   }
+
   async rejectTransaction(
     transactionPDA: PublicKey
   ): Promise<TransactionAccount> {
@@ -463,6 +472,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getTransaction(transactionPDA);
   }
+
   async buildRejectTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -470,6 +480,7 @@ class SquadsMesh {
     const methods = await this._rejectTransaction(multisigPDA, transactionPDA);
     return await methods.instruction();
   }
+
   private async _cancelTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -480,6 +491,7 @@ class SquadsMesh {
       member: this.wallet.publicKey,
     });
   }
+
   async cancelTransaction(
     transactionPDA: PublicKey
   ): Promise<TransactionAccount> {
@@ -491,6 +503,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getTransaction(transactionPDA);
   }
+
   async buildCancelTransaction(
     multisigPDA: PublicKey,
     transactionPDA: PublicKey
@@ -498,6 +511,7 @@ class SquadsMesh {
     const methods = await this._cancelTransaction(multisigPDA, transactionPDA);
     return await methods.instruction();
   }
+
   private async _executeTransaction(
     transactionPDA: PublicKey,
     feePayer: PublicKey
@@ -598,6 +612,7 @@ class SquadsMesh {
     executeIx.keys = executeIx.keys.concat(keysUnique);
     return executeIx;
   }
+
   async executeTransaction(
     transactionPDA: PublicKey,
     feePayer?: PublicKey,
@@ -617,6 +632,7 @@ class SquadsMesh {
     await this.provider.sendAndConfirm(executeTx, signers);
     return await this.getTransaction(transactionPDA);
   }
+
   async buildExecuteTransaction(
     transactionPDA: PublicKey,
     feePayer?: PublicKey
@@ -624,6 +640,7 @@ class SquadsMesh {
     const payer = feePayer ?? this.wallet.publicKey;
     return await this._executeTransaction(transactionPDA, payer);
   }
+
   private async _executeInstruction(
     transactionPDA: PublicKey,
     instructionPDA: PublicKey
@@ -648,6 +665,7 @@ class SquadsMesh {
       })
       .remainingAccounts(remainingAccountKeys);
   }
+
   async executeInstruction(
     transactionPDA: PublicKey,
     instructionPDA: PublicKey
@@ -659,6 +677,7 @@ class SquadsMesh {
     await methods.rpc();
     return await this.getInstruction(instructionPDA);
   }
+
   async buildExecuteInstruction(
     transactionPDA: PublicKey,
     instructionPDA: PublicKey
