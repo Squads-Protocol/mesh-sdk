@@ -1,6 +1,6 @@
 {
   "name": "@sqds/mesh",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An SDK for easily interacting with Squads Mesh Program",
   "main": "lib/sdk/src/index.js",
   "files": [
