@@ -16,7 +16,7 @@ This package provides classes and utilities to make it easier to interact with t
 ```typescript
 import Squads from "@sqds/mesh";
 
-// By default, the canonical Program IDs for SquadsMPL and ProgramManager will be used
+// By default, the canonical Program IDs for Squads Mesh Program will be used
 // The 'wallet' passed in will be the signer/feePayer on all transactions through the Squads object.
 const squads = Squads.localnet(wallet); // or Squads.devnet(...); Squads.mainnet(...)
 
@@ -27,7 +27,7 @@ Generally you will want to import the default `Squads` class from `@sqds/mesh` a
 
 This class gives you access to essentially all instructions on the main Squads Mesh program.
 
-For more information about the instructions and program capabilities, see the `/programs/mesh` README.
+For more information about the instructions and program capabilities, see the `https://github.com/squads-protocol/squads-mpl` README.
 
 ## Important Classes
 ### Squads
