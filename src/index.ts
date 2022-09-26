@@ -40,12 +40,10 @@ class SquadsMesh {
     connection,
     wallet,
     multisigProgramId,
-    programManagerProgramId,
   }: {
     connection: Connection;
     wallet: Wallet;
     multisigProgramId?: PublicKey;
-    programManagerProgramId?: PublicKey;
   }) {
     this.connection = connection;
     this.wallet = wallet;
@@ -68,7 +66,6 @@ class SquadsMesh {
     options?: {
       commitmentOrConfig?: Commitment | ConnectionConfig;
       multisigProgramId?: PublicKey;
-      programManagerProgramId?: PublicKey;
     }
   ) {
     return new SquadsMesh({
@@ -82,7 +79,6 @@ class SquadsMesh {
     options?: {
       commitmentOrConfig?: Commitment | ConnectionConfig;
       multisigProgramId?: PublicKey;
-      programManagerProgramId?: PublicKey;
     }
   ) {
     return new SquadsMesh({
@@ -99,7 +95,6 @@ class SquadsMesh {
     options?: {
       commitmentOrConfig?: Commitment | ConnectionConfig;
       multisigProgramId?: PublicKey;
-      programManagerProgramId?: PublicKey;
     }
   ) {
     return new SquadsMesh({
@@ -116,7 +111,6 @@ class SquadsMesh {
     options?: {
       commitmentOrConfig?: Commitment | ConnectionConfig;
       multisigProgramId?: PublicKey;
-      programManagerProgramId?: PublicKey;
     }
   ) {
     return new SquadsMesh({
@@ -167,7 +161,7 @@ class SquadsMesh {
       address,
       "processed"
     );
-    return { ...accountData, publicKey: address };
+    return { ...accountData, publicKey: address } as TransactionAccount;
   }
   async getTransactions(
     addresses: PublicKey[]
@@ -186,7 +180,7 @@ class SquadsMesh {
       address,
       "processed"
     );
-    return { ...accountData, publicKey: address };
+    return { ...accountData, publicKey: address } as InstructionAccount;
   }
   async getInstructions(
     addresses: PublicKey[]
