@@ -10,27 +10,24 @@ This package provides classes and utilities to make it easier to interact with t
       - [Getters](#getters)
       - [Immediate Instructions](#immediate-instructions)
       - [Built Instructions](#built-instructions)
-    - [TransactionBuilder](#transactionbuilder)
-  - [Contributing](#contributing)
-    - [Building & Testing](#building--testing)
 
 ## Get started
 
 ```typescript
-import Squads from "@sqds/sdk";
+import Squads from "@sqds/mesh";
 
 // By default, the canonical Program IDs for SquadsMPL and ProgramManager will be used
 // The 'wallet' passed in will be the signer/feePayer on all transactions through the Squads object.
 const squads = Squads.localnet(wallet); // or Squads.devnet(...); Squads.mainnet(...)
 
-const multisigAccount = await squads.createMultisig(threshold, createKey, members);
+const multisigAccount = await squads.createMultisig(externalAuthority, threshold, createKey, members);
 ```
 
-Generally you will want to import the default `Squads` class from `@sqds/sdk` and pass in a `Wallet` instance. This would come from your preferred client-side wallet adapter or would likely be a `NodeWallet` if running server-side.
+Generally you will want to import the default `Squads` class from `@sqds/mesh` and pass in a `Wallet` instance. This would come from your preferred client-side wallet adapter or would likely be a `NodeWallet` if running server-side.
 
-This class gives you access to essentially all instructions on the main Squads-MPL program as well as the ProgramManager program to handle program upgrades with multisig ownership and approval.
+This class gives you access to essentially all instructions on the main Squads Mesh program.
 
-For more information about the instructions and program capabilities, see the `/programs/` README in this repo.
+For more information about the instructions and program capabilities, see the `/programs/mesh` README.
 
 ## Important Classes
 ### Squads
@@ -67,28 +64,3 @@ await squads.wallet.signTransaction(tx);
 await sendAndConfirmTransaction(...);
 // etc.
 ```
-
-
-### TransactionBuilder
-When it comes to 'internal instructions' which don't make sense as 'immediate' instructions (since the user cannot execute them unilaterally), the SDK includes a `TransactionBuilder` which can prepare them as an `MsTransaction` for execution via CPI.
-```typescript
-let txBuilder = await squads.getTransactionBuilder(...);
-txBuilder = await txBuilder.withAddMember(...);
-txBuilder = await txBuilder.withChangeThreshold(...);
-txBuilder = await txBuilder.withRemoveMember(...);
-
-// This will create an MsTransaction and add the appropriate MsInstructions (addMember, changeThreshold, removeMember)
-// The txPDA can be used in calls to activateTransaction, approveTransaction, executeTransaction etc.
-const [_txInstructions, txPDA] = await txBuilder.executeInstructions();
-```
-
-
-## Contributing
-
-The community is encouraged to contribute to the Squads SDK by proposing fixes or updates. 
-For any proposed fixes and features, please submit a pull request for review.
-
-### Building & Testing
-`yarn build` will build the package into the `lib/` directory. The directory will contain compiled CommonJS files (.cjs), TypeScript declaration files (.d.ts), and Anchor IDL files (.json) which comprise the package. This command must be run in order to have changes to `src/` reflected in tests or actual package use.
-
-`yarn test` will run only the tests within the `sdk/` directory (not much at the moment). More robust testing (including localnet-deployed programs and RPC calls) is done by running `yarn test` in the root directory of this repository (`../`).
