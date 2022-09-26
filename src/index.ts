@@ -6,9 +6,7 @@ import {
   TransactionInstruction,
   Signer,
 } from "@solana/web3.js";
-import {
-  DEFAULT_MULTISIG_PROGRAM_ID,
-} from "./constants";
+import { DEFAULT_MULTISIG_PROGRAM_ID } from "./constants";
 import meshJSON from "./mesh-idl/mesh.json";
 import { Mesh } from "./mesh-types/mesh";
 import { Wallet } from "@project-serum/anchor/dist/cjs/provider";
@@ -19,12 +17,7 @@ import {
   SquadsMethods,
   TransactionAccount,
 } from "./types";
-import {
-  getAuthorityPDA,
-  getIxPDA,
-  getMsPDA,
-  getTxPDA,
-} from "./address";
+import { getAuthorityPDA, getIxPDA, getMsPDA, getTxPDA } from "./address";
 import BN from "bn.js";
 import * as anchor from "@project-serum/anchor";
 import { TransactionBuilder } from "./tx_builder";
@@ -48,11 +41,11 @@ class SquadsMesh {
     this.connection = connection;
     this.wallet = wallet;
     this.multisigProgramId = multisigProgramId ?? DEFAULT_MULTISIG_PROGRAM_ID;
-    this.provider = new AnchorProvider(
-      this.connection,
-      this.wallet,
-      {...AnchorProvider.defaultOptions(), commitment: "confirmed", preflightCommitment: "confirmed"}
-    );
+    this.provider = new AnchorProvider(this.connection, this.wallet, {
+      ...AnchorProvider.defaultOptions(),
+      commitment: "confirmed",
+      preflightCommitment: "confirmed",
+    });
     this.multisig = new Program<Mesh>(
       meshJSON as Mesh,
       this.multisigProgramId,
@@ -143,13 +136,19 @@ class SquadsMesh {
     );
   }
   async getMultisig(address: PublicKey): Promise<MultisigAccount> {
-    const accountData = await this.multisig.account.ms.fetch(address, "processed");
+    const accountData = await this.multisig.account.ms.fetch(
+      address,
+      "processed"
+    );
     return { ...accountData, publicKey: address } as MultisigAccount;
   }
   async getMultisigs(
     addresses: PublicKey[]
   ): Promise<(MultisigAccount | null)[]> {
-    const accountData = await this.multisig.account.ms.fetchMultiple(addresses, "processed");
+    const accountData = await this.multisig.account.ms.fetchMultiple(
+      addresses,
+      "processed"
+    );
     return this._addPublicKeys(
       accountData,
       addresses
@@ -314,7 +313,7 @@ class SquadsMesh {
     instructionIndex: number,
     authorityIndex?: number,
     authorityBump?: number,
-    authorityType?: string,
+    authorityType?: string
   ): Promise<[SquadsMethods, PublicKey]> {
     const [instructionPDA] = getIxPDA(
       transactionPDA,
@@ -323,18 +322,19 @@ class SquadsMesh {
     );
 
     return [
-      this.multisig.methods.addInstruction(
-        instruction,
-        authorityIndex || null,
-        authorityBump || null,
-        (authorityType === "custom") ? {custom:{}} : {default:{}}
-      )
-      .accounts({
-        multisig: multisigPDA,
-        transaction: transactionPDA,
-        instruction: instructionPDA,
-        creator: this.wallet.publicKey,
-      }),
+      this.multisig.methods
+        .addInstruction(
+          instruction,
+          authorityIndex || null,
+          authorityBump || null,
+          authorityType === "custom" ? { custom: {} } : { default: {} }
+        )
+        .accounts({
+          multisig: multisigPDA,
+          transaction: transactionPDA,
+          instruction: instructionPDA,
+          creator: this.wallet.publicKey,
+        }),
       instructionPDA,
     ];
   }
@@ -343,7 +343,7 @@ class SquadsMesh {
     instruction: TransactionInstruction,
     authorityIndex?: number,
     authorityBump?: number,
-    authorityType?: string,
+    authorityType?: string
   ): Promise<InstructionAccount> {
     const transaction = await this.getTransaction(transactionPDA);
     const [methods, instructionPDA] = await this._addInstruction(
@@ -353,7 +353,7 @@ class SquadsMesh {
       transaction.instructionIndex + 1,
       authorityIndex,
       authorityBump,
-      authorityType,
+      authorityType
     );
     await methods.rpc();
     return await this.getInstruction(instructionPDA);
@@ -366,7 +366,7 @@ class SquadsMesh {
     instructionIndex: number,
     authorityIndex?: number,
     authorityBump?: number,
-    authorityType?: string,
+    authorityType?: string
   ): Promise<TransactionInstruction> {
     const [methods] = await this._addInstruction(
       multisigPDA,
@@ -375,7 +375,7 @@ class SquadsMesh {
       instructionIndex,
       authorityIndex,
       authorityBump,
-      authorityType,
+      authorityType
     );
     return await methods.instruction();
   }

@@ -57,17 +57,17 @@ export const getAuthorityPDA = (
     programId
   );
 
-  export const getIxAuthorityPDA = (
-    txPDA: PublicKey,
-    authorityIndexBN: BN,
-    programId: PublicKey
-  ) =>
-    PublicKey.findProgramAddressSync(
-      [
-        utils.bytes.utf8.encode("squad"),
-        txPDA.toBuffer(),
-        authorityIndexBN.toArrayLike(Buffer, "le", 4), // note authority index is an u32 (4 byte)
-        utils.bytes.utf8.encode("ix_authority"),
-      ],
-      programId
-    );
+export const getIxAuthorityPDA = (
+  txPDA: PublicKey,
+  authorityIndexBN: BN,
+  programId: PublicKey
+) =>
+  PublicKey.findProgramAddressSync(
+    [
+      utils.bytes.utf8.encode("squad"),
+      txPDA.toBuffer(),
+      authorityIndexBN.toArrayLike(Buffer, "le", 4), // note authority index is an u32 (4 byte)
+      utils.bytes.utf8.encode("ix_authority"),
+    ],
+    programId
+  );

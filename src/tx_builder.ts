@@ -1,7 +1,4 @@
-import {
-  MultisigAccount,
-  SquadsMethodsNamespace,
-} from "./types";
+import { MultisigAccount, SquadsMethodsNamespace } from "./types";
 import { PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { getIxPDA, getTxPDA } from "./address";
 import BN from "bn.js";
@@ -15,8 +12,8 @@ export interface InstructionAuthority {
 }
 
 export interface AuthorizedInstruction {
-  instruction: TransactionInstruction,
-  authority: InstructionAuthority
+  instruction: TransactionInstruction;
+  authority: InstructionAuthority;
 }
 
 export class TransactionBuilder {
@@ -42,20 +39,23 @@ export class TransactionBuilder {
     this.instructions = instructions ?? [];
   }
 
-  private static _buildAuthorizedInstruction(instruction: TransactionInstruction, authority?: InstructionAuthority): AuthorizedInstruction {
+  private static _buildAuthorizedInstruction(
+    instruction: TransactionInstruction,
+    authority?: InstructionAuthority
+  ): AuthorizedInstruction {
     const {
       authorityIndex = null,
       authorityBump = null,
-      authorityType = null
+      authorityType = null,
     } = authority || {};
     return {
       instruction,
       authority: {
         authorityIndex,
         authorityBump,
-        authorityType
-      }
-    }
+        authorityType,
+      },
+    };
   }
   private async _buildAddInstruction(
     transactionPDA: PublicKey,
@@ -67,17 +67,14 @@ export class TransactionBuilder {
       new BN(instructionIndex, 10),
       this.programId
     );
-    const {
-      authorityIndex,
-      authorityBump,
-      authorityType
-    } = instruction.authority;
+    const { authorityIndex, authorityBump, authorityType } =
+      instruction.authority;
     return await this.methods
       .addInstruction(
         instruction.instruction,
         authorityIndex,
         authorityBump,
-        (authorityType === "custom") ? {custom:{}} : {default:{}}
+        authorityType === "custom" ? { custom: {} } : { default: {} }
       )
       .accounts({
         multisig: this.multisig.publicKey,
@@ -108,8 +105,15 @@ export class TransactionBuilder {
     );
     return transactionPDA;
   }
-  withInstruction(instruction: TransactionInstruction, authority?: InstructionAuthority): TransactionBuilder {
-    return this._cloneWithInstructions(this.instructions.concat(TransactionBuilder._buildAuthorizedInstruction(instruction, authority)));
+  withInstruction(
+    instruction: TransactionInstruction,
+    authority?: InstructionAuthority
+  ): TransactionBuilder {
+    return this._cloneWithInstructions(
+      this.instructions.concat(
+        TransactionBuilder._buildAuthorizedInstruction(instruction, authority)
+      )
+    );
   }
 
   /**
@@ -117,23 +121,36 @@ export class TransactionBuilder {
    * When provided as a single value, the same authority information will be associated with all instructions.
    * When provided as an array of values, the authorities will be matched to instructions by index.
    */
-  withInstructions(instructions: TransactionInstruction[], authority?: InstructionAuthority | InstructionAuthority[]): TransactionBuilder {
+  withInstructions(
+    instructions: TransactionInstruction[],
+    authority?: InstructionAuthority | InstructionAuthority[]
+  ): TransactionBuilder {
     const authorizedInstructions = [];
     if (Array.isArray(authority)) {
       if (authority.length < instructions.length) {
-        throw new Error("withInstructions: Provided authority array must cover entire instructions array")
+        throw new Error(
+          "withInstructions: Provided authority array must cover entire instructions array"
+        );
       }
       for (let i = 0; i < instructions.length; i++) {
-        authorizedInstructions.push(TransactionBuilder._buildAuthorizedInstruction(instructions[i], authority[i]));
+        authorizedInstructions.push(
+          TransactionBuilder._buildAuthorizedInstruction(
+            instructions[i],
+            authority[i]
+          )
+        );
       }
     } else {
-      authorizedInstructions.push(...instructions.map((instruction) => TransactionBuilder._buildAuthorizedInstruction(instruction, authority)))
+      authorizedInstructions.push(
+        ...instructions.map((instruction) =>
+          TransactionBuilder._buildAuthorizedInstruction(instruction, authority)
+        )
+      );
     }
     return this._cloneWithInstructions(
       this.instructions.concat(authorizedInstructions)
     );
   }
-
 
   async getInstructions(): Promise<[TransactionInstruction[], PublicKey]> {
     const transactionPDA = this.transactionPDA();
