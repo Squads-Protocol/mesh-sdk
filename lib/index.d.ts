@@ -1,6 +1,6 @@
 import { Connection, PublicKey, Commitment, ConnectionConfig, TransactionInstruction, Signer } from "@solana/web3.js";
 import { Wallet } from "@project-serum/anchor/dist/cjs/provider";
-import { InstructionAccount, MultisigAccount, TransactionAccount } from "./types";
+import { InstructionAccount, MultisigAccount, SquadsMethods, TransactionAccount } from "./types";
 import { TransactionBuilder } from "./tx_builder";
 declare class SquadsMesh {
     readonly connection: Connection;
@@ -67,6 +67,18 @@ declare class SquadsMesh {
     private _executeInstruction;
     executeInstruction(transactionPDA: PublicKey, instructionPDA: PublicKey): Promise<InstructionAccount>;
     buildExecuteInstruction(transactionPDA: PublicKey, instructionPDA: PublicKey): Promise<TransactionInstruction>;
+    _addMember(multisig: PublicKey, externalAuthority: PublicKey, newMember: PublicKey): Promise<SquadsMethods>;
+    addMember(multisig: PublicKey, externalAuthority: PublicKey, newMember: PublicKey): Promise<string>;
+    buildAddMember(multisig: PublicKey, externalAuthority: PublicKey, newMember: PublicKey): Promise<TransactionInstruction>;
+    _removeMember(multisig: PublicKey, externalAuthority: PublicKey, exMember: PublicKey): Promise<SquadsMethods>;
+    removeMember(multisig: PublicKey, externalAuthority: PublicKey, exMember: PublicKey): Promise<string>;
+    buildRemoveMember(multisig: PublicKey, externalAuthority: PublicKey, exMember: PublicKey): Promise<TransactionInstruction>;
+    _changeThreshold(multisig: PublicKey, externalAuthority: PublicKey, newThreshold: number): Promise<SquadsMethods>;
+    changeThreshold(multisig: PublicKey, externalAuthority: PublicKey, newThreshold: number): Promise<string>;
+    buildChangeThresholdMember(multisig: PublicKey, externalAuthority: PublicKey, newThreshold: number): Promise<TransactionInstruction>;
+    _changeExternalAuthority(multisig: PublicKey, externalAuthority: PublicKey, newExternalAuthority: PublicKey): Promise<SquadsMethods>;
+    changeExternalAuthority(multisig: PublicKey, externalAuthority: PublicKey, newExternalAuthority: PublicKey): Promise<string>;
+    buildChangeExternalAuthority(multisig: PublicKey, externalAuthority: PublicKey, newExternalAuthority: PublicKey): Promise<TransactionInstruction>;
 }
 export default SquadsMesh;
 export * from "./constants";

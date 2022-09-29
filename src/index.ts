@@ -528,29 +528,8 @@ class SquadsMesh {
       .map(({ pubkey, ixItem }) => {
         const ixKeys: anchor.web3.AccountMeta[] =
           ixItem.keys as anchor.web3.AccountMeta[];
-        const addSig = anchor.utils.sha256.hash("global:add_member");
-        const ixDiscriminator = Buffer.from(addSig, "hex");
-        const addData = Buffer.concat([ixDiscriminator.slice(0, 8)]);
-        const addAndThreshSig = anchor.utils.sha256.hash(
-          "global:add_member_and_change_threshold"
-        );
-        const ixAndThreshDiscriminator = Buffer.from(addAndThreshSig, "hex");
-        const addAndThreshData = Buffer.concat([
-          ixAndThreshDiscriminator.slice(0, 8),
-        ]);
-        const ixData = ixItem.data as any;
 
-        const formattedKeys = ixKeys.map((ixKey, keyInd) => {
-          if (
-            (ixData.includes(addData) || ixData.includes(addAndThreshData)) &&
-            keyInd === 2
-          ) {
-            return {
-              pubkey: feePayer,
-              isSigner: false,
-              isWritable: ixKey.isWritable,
-            };
-          }
+        const formattedKeys = ixKeys.map((ixKey) => {
           return {
             pubkey: ixKey.pubkey,
             isSigner: false,
@@ -681,6 +660,147 @@ class SquadsMesh {
       instructionPDA
     );
     return await methods.instruction();
+  }
+
+  // the core add member method
+  async _addMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newMember: PublicKey
+  ): Promise<SquadsMethods> {
+    const method = await this.multisig.methods.addMember(newMember)
+    .accounts({
+      multisig,
+      externalAuthority,
+    });
+    return method;
+  }
+
+  // add a member, directly invoke from the external authority
+  async addMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newMember: PublicKey
+  ): Promise<string> {
+    const method = await this._addMember(multisig, externalAuthority, newMember);
+    return  method.rpc();
+  }
+
+  // add a member, returns instruction for when the 
+  // external authority is a default authority
+  async buildAddMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newMember: PublicKey,
+  ): Promise<TransactionInstruction>{
+    const method = await this._addMember(multisig, externalAuthority, newMember);
+    return method.instruction();
+  }
+
+  // the core remove member method
+  async _removeMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    exMember: PublicKey
+  ): Promise<SquadsMethods> {
+    const method = await this.multisig.methods.removeMember(exMember)
+    .accounts({
+      multisig,
+      externalAuthority,
+    });
+    return method;
+  }
+
+  // external auth internal functions
+  // add a member, directly invoke from the external authority
+  async removeMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    exMember: PublicKey
+  ): Promise<string> {
+    const method = await this._removeMember(multisig, externalAuthority, exMember);
+    return  method.rpc();
+  }
+
+  // add a member, returns instruction for when the 
+  // external authority is a default authority
+  async buildRemoveMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    exMember: PublicKey,
+  ): Promise<TransactionInstruction>{
+    const method = await this._removeMember(multisig, externalAuthority, exMember);
+    return method.instruction();
+  }
+
+  // the core remove member method
+  async _changeThreshold(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newThreshold: number,
+  ): Promise<SquadsMethods> {
+    const method = await this.multisig.methods.changeThreshold(newThreshold)
+    .accounts({
+      multisig,
+      externalAuthority,
+    });
+    return method;
+  }
+
+  // external auth internal functions
+  // add a member, directly invoke from the external authority
+  async changeThreshold(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newThreshold: number
+  ): Promise<string> {
+    const method = await this._changeThreshold(multisig, externalAuthority, newThreshold);
+    return  method.rpc();
+  }
+
+  // add a member, returns instruction for when the 
+  // external authority is a default authority
+  async buildChangeThresholdMember(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newThreshold: number,
+  ): Promise<TransactionInstruction>{
+    const method = await this._changeThreshold(multisig, externalAuthority, newThreshold);
+    return method.instruction();
+  }
+
+  // change external authority
+  async _changeExternalAuthority(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newExternalAuthority: PublicKey,
+  ): Promise<SquadsMethods> {
+    const method = await this.multisig.methods.changeExternalAuthority(newExternalAuthority)
+    .accounts({
+      multisig,
+      externalAuthority,
+    });
+    return method;
+  }
+
+  // immediate invocation by external authority
+  async changeExternalAuthority(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newExternalAuthority: PublicKey,
+  ): Promise<string> {
+    const method = await this._changeExternalAuthority(multisig, externalAuthority, newExternalAuthority);
+    return  method.rpc();
+  }
+
+  // build instruction for the external authority
+  async buildChangeExternalAuthority(
+    multisig: PublicKey,
+    externalAuthority: PublicKey,
+    newExternalAuthority: PublicKey,
+  ): Promise<TransactionInstruction>{
+    const method = await this._changeExternalAuthority(multisig, externalAuthority, newExternalAuthority);
+    return method.instruction();
   }
 }
 
